@@ -1,0 +1,8 @@
+; $Id$
+name = Donor Rally PayPal Gateway
+description = Use PayPal for donations
+core = 6.x
+dependencies[] = donor_rally
+dependencies[] = simple_payments
+dependencies[] = simple_payments_paypal
+package = Donor Rally

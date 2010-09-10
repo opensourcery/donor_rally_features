@@ -1,0 +1,165 @@
+/** Thermometer **/
+.donor-rally-thermometer {
+  position: relative;
+  height: 256px;
+}
+
+.donor-rally-thermometer span {
+  position: absolute;
+}
+
+.thermometer-goal,
+.thermometer-points {
+  right: 127px;
+  text-align: right;
+}
+
+/* Tops */
+.thermometer-empty-top,
+.thermometer-filled-top {
+  height: 53px;
+  width: 112px;
+  right: 0;
+}
+
+.thermometer-empty-middle,
+.thermometer-filled-middle {
+  width: 112px;
+  right: 0;
+}
+
+.thermometer-empty-bottom,
+.thermometer-filled-bottom {
+  height: 25px;
+  width: 112px;
+  right: 0;
+}
+
+.thermometer-empty-top {
+  background: transparent url(images/thermometer-empty-ends.png) no-repeat scroll top left;
+  z-index: 100;
+}
+.thermometer-empty-middle {
+  background: transparent url(images/thermometer-empty-middle.png) repeat-y scroll top left;
+  z-index: 80;
+}
+.thermometer-empty-bottom {
+  background: transparent url(images/thermometer-empty-ends.png) no-repeat 0 -53px;
+  z-index: 60;
+}
+
+.thermometer-filled-top {
+  background: transparent url(images/thermometer-filled-ends.png) no-repeat scroll top left;
+  z-index: 50;
+} 
+.thermometer-filled-middle {
+  background: transparent url(images/thermometer-filled-middle.png) repeat-y scroll top left;
+  z-index: 40;
+}
+.thermometer-filled-bottom {
+  background: transparent url(images/thermometer-filled-ends.png) no-repeat 0 -53px;
+  z-index: 40;
+}
+
+
+/** Team Stats **/
+table.donor-rally-team-stats {
+  border: 1px solid #ccc;
+  margin-bottom: 0;
+}
+
+table.donor-rally-team-stats tbody th {
+  border-bottom: none;
+  border-right: 1px solid #ccc;
+}
+
+table.donor-rally-team-stats .odd {
+  background-color: #333;
+}
+table.donor-rally-team-stats .even {
+  background-color: #555;
+}
+
+table.donor-rally-team-stats thead tr th:first-child {
+  border-bottom: none;
+}
+
+table.donor-rally-team-stats thead th,
+table.donor-rally-team-stats tbody td {
+  text-align: right;
+}
+
+/** Buttons **/
+a.donor-rally-button {
+  text-align: center;
+  font-weight: bold;
+  display: block;
+  background-color: #ccc;
+  font-size: 1.1em;
+  padding: 0.5em 0;
+  border-bottom: solid 1px #666;
+  border-right: solid 1px #666;
+}
+a.donor-rally-button:link,
+a.donor-rally-button:visited,
+a.donor-rally-button:hover {
+  color: #000;
+  text-decoration: none;
+}
+a.donor-rally-button:hover {
+  background-color: #eee;
+}
+a.donor-rally-button:active {
+  background-color: #989848;
+  border-top: solid 1px #666;
+  border-left: solid 1px #666;
+  border-bottom: 0 none;
+  border-right: 0 none;
+}
+ 
+/* Donate Now button */
+a.donor-rally-donate-button {
+  padding: 1em 0;
+  font-size: 2em;
+  background-color: #c60;
+}
+a.donor-rally-donate-button:hover {
+  background-color: #d70;
+}
+a.donor-rally-donate-button:active {
+  background-color: #b85800;
+}
+
+
+/* Team coordinator login button -- make it not look like a button */
+a.donor-rally-team-coordinator-login-button:link,
+a.donor-rally-team-coordinator-login-button:visited {
+  padding: 0;
+  background-color: transparent;
+  border: 0 none;
+  color: #333;
+  font-size: 1em;
+}
+a.donor-rally-team-coordinator-login-button:hover {
+  background-color: transparent;
+  text-decoration: underline;
+  color: #333;
+}
+
+/* Team link on user profile page */
+dl.donor-rally-profile-team-info dd {
+  background-color: #f1f8e8;
+  padding: 1.25em;
+}
+.donor-rally-raw-url {
+  display: block;
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+/* Profile/team edit form */
+div#edit-field-captain-location-0-delete-location-wrapper,
+div#edit-field-location-0-delete-location-wrapper {
+  display: none;
+}
+

@@ -1,0 +1,533 @@
+<?php
+
+// $Id$
+
+/**
+ * @file
+ * Donor Rally module. Allows teams/groups to "compete" in fundraising campaigns.
+ * See README.txt for more information.
+ */
+
+/**
+ * Team content type.
+ */
+define('DONOR_RALLY_CONTENT_PROFILE_TYPE', 'team');
+
+/**
+ * Implements hook_menu().
+ */
+function donor_rally_menu() {
+  $items = array();
+  $items['admin/settings/donor-rally'] = array(
+    'title' => 'Donor Rally',
+    'description' => 'Global settings for Donor Rally',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('donor_rally_settings_form'),
+    'access arguments' => array('administer donor rally'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'donor_rally.admin.inc',
+  );
+
+  $items['admin/settings/donor-rally/global'] = array(
+    'title' => 'Global settings',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_perm().
+ */
+function donor_rally_perm() {
+  return array('administer donor rally');
+}
+
+/**
+ * Implements hook_theme().
+ */
+function donor_rally_theme($existing, $type, $theme, $path) {
+  $base = array(
+    'arguments' => array('vars' => array())
+  );
+  return array(
+    'donor_rally_team_progress_thermometer' => array(
+      'template' => 'donor-rally-team-progress-thermometer',
+    ) + $base,
+    'donor_rally_team_progress_stats' => array(
+      'template' => 'donor-rally-team-progress-stats',
+    ) + $base,
+    'donor_rally_team_leaderboard_button' => $base,
+    'donor_rally_team_page_button' => $base,
+    'donor_rally_new_blog_post_button' => $base,
+    'donor_rally_team_coordinator_login_button' => $base,
+    'donor_rally_team_coordinator_account_button' => $base,
+  );
+}
+
+/**
+ * Implements hook_profile_alter().
+ */
+function donor_rally_profile_alter(&$account) {
+  if ($node = content_profile_load(DONOR_RALLY_CONTENT_PROFILE_TYPE, $account->uid)) {
+    $account->content['donor-rally-team-info'] = array(
+      '#type' => 'user_profile_category',
+      '#title' => t('Team information'),
+      '#attributes' => array('class' => 'donor-rally-profile-team-info'),
+    );
+    $account->content['donor-rally-team-info']['link'] = array(
+      '#type' => 'user_profile_item',
+      '#title' => t('Team Page link&mdash;give this to your team'),
+      '#value' => '<span class="donor-rally-raw-url">'.
+        url('node/'. $node->nid, array('absolute' => TRUE)) .
+        '</span>',
+    );
+    unset($account->content['summary']);
+  }
+}
+
+/**
+ * Implements hook_cron().
+ */
+function donor_rally_cron() {
+  donor_rally_refresh_all();
+}
+
+/**
+ * Refreshes all teams' points and statistics by querying the payment
+ * gateway and recalculating totals.
+ */
+function donor_rally_refresh_all() {
+  $cash_scale = (float)variable_get('donor_rally_cash_scale', 1.0);
+  $food_scale = (float)variable_get('donor_rally_food_scale', 1.0);
+  $volunteer_scale = (float)variable_get('donor_rally_volunteer_scale', 1.0);
+
+  $current_all = _donor_rally_fetch_current_team_stats();
+  foreach ($current_all as $nid => $now) {
+    if ($cash = module_invoke(variable_get('donor_rally_payment_gateway', 'donor_rally_salsa'), 'donor_rally_online_cash', $nid)) {
+      $now['cash'] = $cash;
+    }
+    else {
+      // no-op; we didn't get an online cash value from the payment
+      // gateway for this team, so just use the current value for
+      // calculating new totals
+      $now['cash'] = 0;
+    }
+    // @TODO, abstract this out to exclude food and volunteer hours
+    // unless the in-kind module/feature is enabled.
+    db_query(
+      'UPDATE {' . _donor_rally_get_team_table() . '} SET ' .
+        'field_cash_value = %f, ' .
+        'field_total_points_value = (%f+%f)*%f + (%f+%f)*%f + (%f+%f)*%f, ' .
+        'field_points_per_capita_value = ((%f+%f)*%f + (%f+%f)*%f + (%f+%f)*%f) / %d ' .
+      'WHERE nid = %d',
+      array(
+        $now['cash'],
+        $now['cash'], $now['field_offline_cash_value'], $cash_scale, $now['food'], $now['offline_food'], $food_scale, $now['volunteer'], $now['offline_volunteer'], $volunteer_scale,
+        $now['cash'], $now['field_offline_cash_value'], $cash_scale, $now['food'], $now['offline_food'], $food_scale, $now['volunteer'], $now['offline_volunteer'], $volunteer_scale,
+        $now['field_size_value'],
+        $nid
+      )
+    );
+  }
+  drupal_flush_all_caches();
+}
+
+/**
+ * Fetches current size, cash values, food values, volunteer values for all
+ * teams (from the database).
+ */
+function _donor_rally_fetch_current_team_stats() {
+  $result = db_query('SELECT * FROM {' . _donor_rally_get_team_table() . '}');
+
+  $team_stats = array();
+  while ($current = db_fetch_array($result)) {
+    $nid = $current['nid'];
+    $team_stats[$nid] = $current;
+    unset($team_stats[$nid]['nid']);
+    foreach ($team_stats[$nid] as $field => $value) {
+      if (empty($value)) {
+        $team_stats[$nid][$field] = 0.0;
+      }
+    }
+  }
+
+  return $team_stats;
+}
+
+/**
+ * Get table where team information is stored.
+ */
+function _donor_rally_get_team_table() {
+  $field_cash = content_fields('field_cash');
+  $database_info = content_database_info($field_cash);
+  return $database_info['table'];
+}
+
+/**
+ * Set up Salsa Tracking_Code aliases for debugging.
+ */
+function _donor_rally_set_debug_aliases() {
+  $team_stats = _donor_rally_query_cash_aggregate();
+  $team_names = array_keys($team_stats);
+
+  // Find all team node ids and assign nids to each entry in $team_names.
+  $team_aliases = array();
+  $result = db_query("SELECT nid, title FROM {node} WHERE type = 'team'");
+  $i = 0;
+  while ($node = db_fetch_object($result)) {
+    if (!isset($team_names[$i])) {
+      break;
+    }
+    $team_aliases['by-nid'][$node->nid] = $team_names[$i];
+    $team_aliases['by-name'][$team_names[$i]] = $node->nid;
+    $i++;
+  }
+  drupal_set_message("Aliased $i out of " . count($team_names) . " teams...<br />" . dpr($team_aliases, true));
+  variable_set('donor_rally_debug_aliases', $team_aliases);
+}
+
+/**
+ * Formats a value (points or raw) for display.
+ */
+function _donor_rally_format_value($value) {
+  return number_format($value, 0, '.', ',');
+}
+
+/**
+ * Implementation of hook_donor_rally_team_stat_categories().
+ */
+function donor_rally_donor_rally_team_stat_categories() {
+  return array(
+    'cash' => array(
+      'label' => t('Cash ($)'),
+      'goal_field' => 'field_cash_goal',
+      'total_field' => 'field_cash',
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_donor_rally_point_scales().
+ */
+function donor_rally_donor_rally_point_scales() {
+  return array(
+    'cash' => variable_get('donor_rally_cash_scale', 1.0),
+  );
+}
+
+/**
+ * Calculate a team's statistics directly from node values.
+ */
+function donor_rally_team_stats($node) {
+  $point_scales = module_invoke_all('donor_rally_point_scales');
+  $categories = module_invoke_all('donor_rally_team_stat_categories');
+
+  $stats['total_raw'] = 0.0;
+  $stats['total_raw_goal'] = 0.0;
+
+  foreach ($categories as $type => $info) {
+    $label = $info['label'];
+
+    // Raw values (USD, pounds, shifts, etc.); points (scaled raw).
+    $stats[$type .'_raw'] = $node->{'field_'. $type}[0]['value'] + $node->{'field_offline_' .$type}[0]['value'];
+    $stats[$type .'_raw_goal'] = $node->{'field_'. $type .'_goal'}[0]['value'];
+
+    // Points values.
+    $stats[$type] = $stats[$type .'_raw'] * $point_scales[$type];
+    $stats[$type .'_goal'] = $stats[$type .'_raw_goal'] * $point_scales[$type];
+
+    // Totals.
+    $stats['total_raw'] += $stats[$type];
+    $stats['total_raw_goal'] += $stats[$type .'_goal'];
+
+    // Labels.
+    $stats[$type . '_label'] = $label;
+  }
+
+  // Provide a formatted version as well.
+  foreach ($stats as $k => $v) {
+    if (strpos($k, '_label') === FALSE) {
+      $stats[$k .'_view'] = _donor_rally_format_value($v);
+    }
+  }
+
+  $stats['per_capita'] = $stats['total'] / $node->field_size[0]['value']; 
+  return $stats;
+}
+
+/**
+ * Implements hook_init().
+ */
+function donor_rally_init() {
+  /* We need our css occasionally on pages without our blocks on 'em...so just include it always */
+  drupal_add_css(drupal_get_path('module', 'donor_rally') .'/donor-rally.css', 'module');
+}
+
+/**
+ * Implements hook_block().
+ */
+function donor_rally_block($op = 'list', $delta = 0, $edit = array()) {
+  switch ($op) {
+    case 'list':
+     return array(
+       0 => array(
+         'info' => t('Team Progress Thermometer'),
+         'cache' => BLOCK_NO_CACHE,
+       ),
+       1 => array(
+         'info' => t('Donate Button'),
+         'cache' => BLOCK_CACHE_PER_PAGE,
+       ),
+       2 => array(
+         'info' => t('Leaderboard Button'),
+         'cache' => BLOCK_CACHE_GLOBAL,
+       ),
+       3 => array(
+         'info' => t('Team Progress Statistics'),
+         'cache' => BLOCK_NO_CACHE,
+       ),
+       4 => array(
+         'info' => t('Team Page Button'),
+         'cache' => BLOCK_CACHE_PER_PAGE,
+       ),
+       5 => array(
+         'info' => t('New Team Blog Post'),
+         'cache' => BLOCK_CACHE_PER_PAGE,
+       ),
+       6 => array(
+         'info' => t('Team Coordinator Log in Button'),
+         'cache' => BLOCK_CACHE_GLOBAL,
+       ),
+       7 => array(
+         'info' => t('Team Coordinator Dashboard Button'),
+         'cache' => BLOCK_NO_CACHE,
+       ),
+       'site_thermometer' => array(
+         'info' => t('Site-wide total/goal thermometer'),
+         'cache' => BLOCK_CACHE_GLOBAL,
+       ),
+     );
+    case 'configure':
+      return array();
+    case 'view':
+      if ($delta === 'site_thermometer') {
+        return array(
+          'subject' => '',
+          'content' => _donor_rally_block_site_thermometer(),
+        );
+      }
+      if (!$node) {
+        $node = menu_get_object();
+        if ($node && $node->type != DONOR_RALLY_CONTENT_PROFILE_TYPE) {
+          $node = NULL;
+        }
+      }
+
+      $vars = array();
+      if ($node) {
+        $vars = donor_rally_team_stats($node);
+        $vars['node'] = $node;
+      }
+
+      if ($delta === 1 ) {
+        // Allow payment gateway to set the button.
+        $button = module_invoke(variable_get('donor_rally_payment_gateway', 'donor_rally_salsa'), 'donor_rally_donate_button', $vars);
+        return array(
+          'subject' => '',
+          'content' => $button,
+        );
+      }
+      
+      $theme_functions = array(
+        0 => 'donor_rally_team_progress_thermometer',
+        2 => 'donor_rally_team_leaderboard_button',
+        3 => 'donor_rally_team_progress_stats',
+        4 => 'donor_rally_team_page_button',
+        5 => 'donor_rally_new_blog_post_button',
+        6 => 'donor_rally_team_coordinator_login_button',
+        7 => 'donor_rally_team_coordinator_account_button',
+      );
+      if (isset($theme_functions[$delta])) {
+        return array('subject' => '', 'content' => theme($theme_functions[$delta], $vars));
+      }
+  }
+  return array('subject' => '', 'content' => '');
+}
+
+/**
+ * Implementation of hook_views_api().
+ */
+function donor_rally_views_api() {
+  return array(
+    'api' => 2,
+    'path' => drupal_get_path('module', 'donor_rally'),
+  );
+}
+
+/**
+ * Preprocess thermometer vars for theming
+ */
+function donor_rally_preprocess_donor_rally_team_progress_thermometer(&$variables) {
+  $vars = $variables['vars'];
+  unset($variables['vars']);
+  if ($vars['total_raw_goal'] == 0.0) {
+    return;
+  }
+
+  $total_height = 188; /* Fairly arbitrary */
+  $top_margin = 0;
+  $top_halfheight = $bottom_halfheight = 52 / 2;
+  $font_halfheight = 9; /* half of "line-height" for the style goal/points style */
+
+  $vars['complete'] = $vars['total_raw'] / $vars['total_raw_goal'];
+  $vars['success'] = $vars['complete'] >= 1.0;
+
+  $vars['filled_height'] = (int)($total_height * min(1.0, $vars['complete']) + 0.5);
+  $vars['empty_height'] = $total_height - $vars['filled_height'];
+
+  if (!$vars['success']) {
+    $vars['empty_top_top'] = $top_margin;
+    $vars['empty_middle_top'] = $top_margin + $top_halfheight;
+    $vars['empty_bottom_top'] = $vars['empty_middle_top'] + $vars['empty_height'];
+  }
+
+  $vars['filled_top_top'] = $top_margin /* + $top_halfheight - $top_halfheight */ + $vars['empty_height'];
+  $vars['filled_middle_top'] = $vars['filled_top_top'] + $top_halfheight;
+  $vars['filled_bottom_top'] = $vars['filled_middle_top'] + $vars['filled_height'];
+
+  $vars['goal_top'] = $top_margin + $top_halfheight - $font_halfheight;
+  $vars['points_top'] = max($vars['goal_top'] + $font_halfheight*2, $vars['goal_top'] + $vars['empty_height']);
+  $variables += $vars;
+}
+
+/**
+ * Preprocess variables for statistics block theming
+ */
+function donor_rally_preprocess_donor_rally_team_progress_stats(&$variables) {
+  $variables += $variables['vars'];
+  unset($variables['vars']);
+  $variables['categories'] = module_invoke_all('donor_rally_team_stat_categories');
+  if (count($variables['categories']) > 1) {
+    $variables['categories']['total']['label'] = t('Total points');
+  }
+}
+
+/**
+ * Helper that constructs button markup.
+ */
+function donor_rally_theme_button($class, $text, $link, $attr = array()) {
+  return l($text, $link, array('html' => TRUE, 'attributes' => array('class' => 'donor-rally-button '.$class) + $attr));
+}
+
+/**
+ * Theme the "leaderboard" button block
+ */
+function theme_donor_rally_team_leaderboard_button($vars) {
+  return donor_rally_theme_button(
+    'donor-rally-leaderboard-button',
+    t('Team Ranking'),
+    'leaderboard'
+  );
+}
+
+/**
+ * Theme the "team page" button block
+ */
+function theme_donor_rally_team_page_button($vars) {
+  return donor_rally_theme_button(
+    'donor-rally-team-page-button',
+    t('Team Page'),
+    'node/'. $vars['node']->nid
+  );
+}
+
+/**
+ * Theme the "new blog post" button block
+ */
+function theme_donor_rally_new_blog_post_button($vars) {
+  if (user_access('create team_blog_post content')) {
+    return '<div class="donor-rally-new-blog-post-button">'.
+      l(t('Write a new blog post'), 'node/add/team-blog-post') .
+      '</div>';
+  }
+  return '';
+}
+
+/**
+ * Theme the "Team coordinator login" button block
+ */
+function theme_donor_rally_team_coordinator_login_button($vars) {
+  global $user;
+  if ($user->uid != 0) {
+    return;
+  }
+
+  return donor_rally_theme_button(
+    'donor-rally-team-coordinator-login-button',
+    t('Team Coordinator Login'),
+    'user/login'
+  );
+}
+
+/**
+ * Theme the "Team coordinator account/dashboard" button block
+ */
+function theme_donor_rally_team_coordinator_account_button($vars) {
+  global $user;
+  if (!isset($vars['node']) || $vars['node']->uid != $user->uid) {
+    return;
+  }
+
+  return donor_rally_theme_button(
+    'donor-rally-team-coordinator-account-button',
+    t('Team Dashboard'),
+    'user'
+  );
+}
+
+/**
+ * Sitewide total/goal thermometer.
+ */
+function _donor_rally_block_site_thermometer() {
+  $goal = variable_get('donor_rally_goal', 314159265);
+  $total = _donor_rally_get_total_points();
+  $vars['total_raw_goal'] = $goal;
+  $vars['total_raw'] = $total;
+  $vars['total_raw_goal_view'] = _donor_rally_format_value($goal);
+  $vars['total_raw_view'] = _donor_rally_format_value($total);
+
+  $vars['edit_link'] = user_access('administer donor rally') ? l('Change campaign goal', 'admin/settings/donor-rally', array('query' => drupal_get_destination())) : '';
+  return theme('donor_rally_team_progress_thermometer', $vars);
+}
+
+/**
+ * Get total goal for all combined teams.
+ *
+ * @TODO This isn't actually used anymore, but it may be useful for
+ * getting the total team goals at some point.
+ */
+function _donor_rally_get_total_goal() {
+  $goal = 0;
+  $categories = module_invoke_all('donor_rally_team_stat_categories');
+  foreach ($categories as $category => $info) {
+    $field = content_fields($info['goal_field']);
+    $db_info = content_database_info($field);
+    $table = $db_info['table'];
+    $column = $db_info['columns']['value']['column'];
+    $goal += db_result(db_query("SELECT SUM(" . $column . ") FROM {" . $table . "} GROUP BY " . $column ));
+  }
+  return $goal;
+}
+
+/**
+ * Get total points for all combined teams.
+ */
+function _donor_rally_get_total_points() {
+  $field = content_fields('field_total_points');
+  $db_info = content_database_info($field);
+  $table = $db_info['table'];
+  $column = $db_info['columns']['value']['column'];
+  return db_result(db_query("SELECT SUM(" . $column . ") FROM {" . $table . "} GROUP BY " . $column ));
+}

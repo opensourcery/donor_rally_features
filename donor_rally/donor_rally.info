@@ -1,0 +1,8 @@
+; $Id$
+name = Donor Rally
+description = Donor Rally competitive donation
+dependencies[] = views_or
+dependencies[] = content_profile
+package = Donor Rally
+core = 6.x
+php = 5.0
