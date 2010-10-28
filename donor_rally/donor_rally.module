@@ -308,6 +308,10 @@ function donor_rally_block($op = 'list', $delta = 0, $edit = array()) {
          'info' => t('Site-wide total/goal thermometer'),
          'cache' => BLOCK_CACHE_GLOBAL,
        ),
+       'team_links' => array(
+         'info' => t('Donor Rally Team/Account links'),
+         'cache' => BLOCK_CACHE_PER_USER,
+       ),
      );
     case 'configure':
       return array();
@@ -318,6 +322,13 @@ function donor_rally_block($op = 'list', $delta = 0, $edit = array()) {
           'content' => _donor_rally_block_site_thermometer(),
         );
       }
+      elseif ($delta === 'team_links') {
+        return array(
+          'subject' => '',
+          'content' => _donor_rally_block_team_links(),
+        );
+      }
+
       if (!$node) {
         $node = menu_get_object();
         if ($node && $node->type != DONOR_RALLY_CONTENT_PROFILE_TYPE) {
@@ -516,7 +527,7 @@ function _donor_rally_get_total_goal() {
     $db_info = content_database_info($field);
     $table = $db_info['table'];
     $column = $db_info['columns']['value']['column'];
-    $goal += db_result(db_query("SELECT SUM(" . $column . ") FROM {" . $table . "} GROUP BY " . $column ));
+    $goal += db_result(db_query("SELECT SUM(" . $column . ") FROM {" . $table . "}"));
   }
   return $goal;
 }
@@ -529,5 +540,42 @@ function _donor_rally_get_total_points() {
   $db_info = content_database_info($field);
   $table = $db_info['table'];
   $column = $db_info['columns']['value']['column'];
-  return db_result(db_query("SELECT SUM(" . $column . ") FROM {" . $table . "} GROUP BY " . $column ));
+  return db_result(db_query("SELECT SUM(" . $column . ") FROM {" . $table . "}"));
+}
+
+/**
+ * User account/team management links.
+ */
+function _donor_rally_block_team_links() {
+  if (!user_is_anonymous()) {
+    global $user;
+    $links = array(
+      'edit-team' => array(
+        'title' => t('Manage team'),
+        'href' => "user/{$user->uid}/edit/team",
+      ),
+      'edit-account' => array(
+        'title' => t('Manage account'),
+        'href' => "user/{$user->uid}/edit",
+      ),
+      'logout' => array(
+        'title' => t('Logout'),
+        'href' => 'logout',
+      ),
+    );
+  }
+  else {
+    $links = array(
+      'login' => array(
+        'title' => t('Manage team'),
+        'href' => 'user/login',
+      ),
+      'create' => array(
+        'title' => t('Create your team'),
+        'href' => 'user/register',
+      ),
+    );
+  }
+  drupal_alter('donor_rally_team_links', $links);
+  return theme('links', $links);
 }

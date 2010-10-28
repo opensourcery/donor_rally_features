@@ -8,6 +8,77 @@ function donor_rally_team_context_default_contexts() {
   $context = new stdClass;
   $context->disabled = FALSE; /* Edit this to true to make a default context disabled initially */
   $context->api_version = 3;
+  $context->name = 'anonymous_front';
+  $context->description = 'Anonymous home page blocks';
+  $context->tag = 'Donor Rally';
+  $context->conditions = array(
+    'path' => array(
+      'values' => array(
+        '<front>' => '<front>',
+      ),
+    ),
+    'user' => array(
+      'values' => array(
+        'anonymous user' => 'anonymous user',
+      ),
+    ),
+  );
+  $context->reactions = array(
+    'block' => array(
+      'blocks' => array(
+        'boxes-anon_manage_team' => array(
+          'module' => 'boxes',
+          'delta' => 'anon_manage_team',
+          'region' => 'sidebar_second',
+          'weight' => 0,
+        ),
+      ),
+    ),
+  );
+  $context->condition_mode = 1;
+
+  // Translatables
+  // Included for use with string extractors like potx.
+  t('Anonymous home page blocks');
+  t('Donor Rally');
+
+  $export['anonymous_front'] = $context;
+  $context = new stdClass;
+  $context->disabled = FALSE; /* Edit this to true to make a default context disabled initially */
+  $context->api_version = 3;
+  $context->name = 'dr_sitewide';
+  $context->description = 'Sitewide blocks';
+  $context->tag = 'Donor Rally';
+  $context->conditions = array(
+    'sitewide' => array(
+      'values' => array(
+        1 => 1,
+      ),
+    ),
+  );
+  $context->reactions = array(
+    'block' => array(
+      'blocks' => array(
+        'donor_rally-team_links' => array(
+          'module' => 'donor_rally',
+          'delta' => 'team_links',
+          'region' => 'header',
+          'weight' => 0,
+        ),
+      ),
+    ),
+  );
+  $context->condition_mode = 0;
+
+  // Translatables
+  // Included for use with string extractors like potx.
+  t('Donor Rally');
+  t('Sitewide blocks');
+
+  $export['dr_sitewide'] = $context;
+  $context = new stdClass;
+  $context->disabled = FALSE; /* Edit this to true to make a default context disabled initially */
+  $context->api_version = 3;
   $context->name = 'leaderboard';
   $context->description = 'Donor Rally Leader Board';
   $context->tag = 'Donor Rally';
