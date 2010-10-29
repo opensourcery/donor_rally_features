@@ -40,7 +40,7 @@ function donor_rally_inkind_donor_rally_team_stat_categories() {
     'volunteer' => array(
       'label' => t('Volunteer shifts'),
       'goal_field' => 'field_volunteer_goal',
-      'total_field' => 'field_volunter',
+      'total_field' => 'field_volunteer',
     ),
   );
 }
