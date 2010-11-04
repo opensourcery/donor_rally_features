@@ -4,3 +4,4 @@ description = Allow inkind donations (food, volunteer hours) to be accepted towa
 package = Donor Rally
 dependencies[] = donor_rally
 core = 6.x
+project status url = "http://code.opensourcery.com/fserver"

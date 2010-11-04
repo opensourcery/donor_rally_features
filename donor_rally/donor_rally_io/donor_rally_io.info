@@ -5,3 +5,4 @@ dependencies[] = donor_rally
 dependencies[] = views_bonus_export
 package = Donor Rally
 core = 6.x
+project status url = "http://code.opensourcery.com/fserver"
