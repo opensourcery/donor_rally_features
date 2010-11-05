@@ -1,8 +1,0 @@
-; $Id$
-name = Donor Rally IO
-description = Import/Export utilities for Donor Rally.
-dependencies[] = donor_rally
-dependencies[] = views_bonus_export
-package = Donor Rally
-core = 6.x
-project status url = "http://code.opensourcery.com/fserver"
