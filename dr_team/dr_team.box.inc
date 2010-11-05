@@ -3,7 +3,7 @@
 /**
  * Implementation of hook_default_box().
  */
-function donor_rally_team_default_box() {
+function dr_team_default_box() {
   $export = array();
   $box = new stdClass;
   $box->disabled = FALSE; /* Edit this to true to make a default box disabled initially */

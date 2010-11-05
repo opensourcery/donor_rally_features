@@ -3,7 +3,7 @@
 /**
  * Implementation of hook_content_default_fields().
  */
-function donor_rally_team_content_default_fields() {
+function dr_team_content_default_fields() {
   $fields = array();
 
   // Exported field: field_captain_first_name

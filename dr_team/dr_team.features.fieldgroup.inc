@@ -3,7 +3,7 @@
 /**
  * Implementation of hook_fieldgroup_default_groups().
  */
-function donor_rally_team_fieldgroup_default_groups() {
+function dr_team_fieldgroup_default_groups() {
   $groups = array();
 
   // Exported group: group_team_coordinator

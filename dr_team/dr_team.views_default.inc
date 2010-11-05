@@ -3,12 +3,12 @@
 /**
  * Implementation of hook_views_default_views().
  */
-function donor_rally_team_views_default_views() {
+function dr_team_views_default_views() {
   $views = array();
 
-  // Exported view: donor_rally_team_logo
+  // Exported view: dr_team_logo
   $view = new view;
-  $view->name = 'donor_rally_team_logo';
+  $view->name = 'dr_team_logo';
   $view->description = 'Team page team logo';
   $view->tag = 'Donor Rally';
   $view->view_php = '';
@@ -43,7 +43,7 @@ function donor_rally_team_views_default_views() {
       'empty_zero' => 0,
       'link_to_node' => 0,
       'label_type' => 'none',
-      'format' => 'donor_rally_team_logo_default',
+      'format' => 'dr_team_logo_default',
       'multiple' => array(
         'group' => TRUE,
         'multiple_number' => '',

@@ -3,7 +3,7 @@
 /**
  * Implementation of hook_user_default_permissions().
  */
-function donor_rally_team_user_default_permissions() {
+function dr_team_user_default_permissions() {
   $permissions = array();
 
   // Exported permission: create team content

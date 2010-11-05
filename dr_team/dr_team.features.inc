@@ -3,7 +3,7 @@
 /**
  * Implementation of hook_ctools_plugin_api().
  */
-function donor_rally_team_ctools_plugin_api() {
+function dr_team_ctools_plugin_api() {
   list($module, $api) = func_get_args();
   if ($module == "boxes" && $api == "box") {
     return array("version" => 1);
@@ -19,10 +19,10 @@ function donor_rally_team_ctools_plugin_api() {
 /**
  * Implementation of hook_imagecache_default_presets().
  */
-function donor_rally_team_imagecache_default_presets() {
+function dr_team_imagecache_default_presets() {
   $items = array(
-    'donor_rally_team_logo' => array(
-      'presetname' => 'donor_rally_team_logo',
+    'dr_team_logo' => array(
+      'presetname' => 'dr_team_logo',
       'actions' => array(
         '0' => array(
           'weight' => '0',
@@ -43,7 +43,7 @@ function donor_rally_team_imagecache_default_presets() {
 /**
  * Implementation of hook_node_info().
  */
-function donor_rally_team_node_info() {
+function dr_team_node_info() {
   $items = array(
     'team' => array(
       'name' => t('Team'),
@@ -63,7 +63,7 @@ function donor_rally_team_node_info() {
 /**
  * Implementation of hook_views_api().
  */
-function donor_rally_team_views_api() {
+function dr_team_views_api() {
   return array(
     'api' => '2',
   );

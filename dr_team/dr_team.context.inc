@@ -3,7 +3,7 @@
 /**
  * Implementation of hook_context_default_contexts().
  */
-function donor_rally_team_context_default_contexts() {
+function dr_team_context_default_contexts() {
   $export = array();
   $context = new stdClass;
   $context->disabled = FALSE; /* Edit this to true to make a default context disabled initially */
@@ -182,9 +182,9 @@ function donor_rally_team_context_default_contexts() {
           'region' => 'sidebar_second',
           'weight' => 6,
         ),
-        'views-donor_rally_team_logo-block_1' => array(
+        'views-dr_team_logo-block_1' => array(
           'module' => 'views',
-          'delta' => 'donor_rally_team_logo-block_1',
+          'delta' => 'dr_team_logo-block_1',
           'region' => 'content_bottom',
           'weight' => 0,
         ),
