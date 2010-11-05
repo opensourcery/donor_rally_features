@@ -14,6 +14,7 @@
 <div class="donor-rally-thermometer">
   <span class="thermometer-goal" style="top: <?php print $goal_top; ?>px;">Goal: <?php print $total_raw_goal_view; ?></span>
   <span class="thermometer-points" style="top: <?php print $points_top; ?>px;">Current: <?php print $total_raw_view; ?></span>
+  <div id="thermometer-overlay"> </div>
   <div class="thermometer-graphics">
     <?php if (!$success): ?>
       <span class="thermometer-empty-top" style="top: <?php print $empty_top_top; ?>px;"></span>

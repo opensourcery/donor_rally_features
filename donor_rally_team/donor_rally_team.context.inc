@@ -133,28 +133,28 @@ function donor_rally_team_context_default_contexts() {
         'team' => 'team',
       ),
       'options' => array(
-        'node_form' => 0,
+        'node_form' => '0',
       ),
     ),
   );
   $context->reactions = array(
     'block' => array(
       'blocks' => array(
+        'boxes-team_page_common' => array(
+          'module' => 'boxes',
+          'delta' => 'team_page_common',
+          'region' => 'sidebar_second',
+          'weight' => 0,
+        ),
         'donor_rally-0' => array(
           'module' => 'donor_rally',
           'delta' => 0,
           'region' => 'sidebar_second',
-          'weight' => 0,
+          'weight' => 1,
         ),
         'donor_rally-1' => array(
           'module' => 'donor_rally',
           'delta' => 1,
-          'region' => 'sidebar_second',
-          'weight' => 1,
-        ),
-        'boxes-team_page_common' => array(
-          'module' => 'boxes',
-          'delta' => 'team_page_common',
           'region' => 'sidebar_second',
           'weight' => 2,
         ),

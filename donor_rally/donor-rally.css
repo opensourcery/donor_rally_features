@@ -1,4 +1,7 @@
 /** Thermometer **/
+#thermometer-overlay {
+z-index:1000; position: relative; background: url("/profiles/donor_rally_install/modules/donor_rally_features/donor_rally/images/thermometer-overlay.png") no-repeat scroll left top transparent; height: 256px;}
+
 .donor-rally-thermometer {
   position: relative;
   height: 256px;
@@ -10,54 +13,72 @@
 
 .thermometer-goal,
 .thermometer-points {
-  right: 127px;
-  text-align: right;
+  display:block;
+  font-size:1.2em;
+  right:190px;
+  text-align:right;
+  width:100px;
+  z-index:2000;
+}
+
+.thermometer-goal {
+  background: #a6d427;
+  padding: 3px;
+}
+
+.thermometer-points {
+  background: #15aada;
+  padding: 3px;
 }
 
 /* Tops */
+.thermometer-graphics {
+  width: 53px;
+}
+
 .thermometer-empty-top,
 .thermometer-filled-top {
   height: 53px;
-  width: 112px;
-  right: 0;
+  width: 53px;
+  right: 128px;
 }
 
 .thermometer-empty-middle,
 .thermometer-filled-middle {
-  width: 112px;
-  right: 0;
+  width: 53px;
+  right: 128px;
 }
 
 .thermometer-empty-bottom,
 .thermometer-filled-bottom {
   height: 25px;
-  width: 112px;
-  right: 0;
+  width: 53px;
+  right: 128px;
 }
 
 .thermometer-empty-top {
-  background: transparent url(images/thermometer-empty-ends.png) no-repeat scroll top left;
+  background: transparent url(images/thermometer-empty-ends-2.png) no-repeat scroll top left;
   z-index: 100;
 }
 .thermometer-empty-middle {
-  background: transparent url(images/thermometer-empty-middle.png) repeat-y scroll top left;
+  background: transparent url(images/thermometer-empty-middle-2.png) repeat-y scroll top left;
   z-index: 80;
 }
 .thermometer-empty-bottom {
-  background: transparent url(images/thermometer-empty-ends.png) no-repeat 0 -53px;
+  background: transparent url(images/thermometer-empty-ends-2.png) no-repeat 0 -27px;
   z-index: 60;
 }
 
 .thermometer-filled-top {
-  background: transparent url(images/thermometer-filled-ends.png) no-repeat scroll top left;
+  background: transparent url(images/thermometer-filled-ends-2.png) no-repeat scroll top left;
   z-index: 50;
 } 
 .thermometer-filled-middle {
-  background: transparent url(images/thermometer-filled-middle.png) repeat-y scroll top left;
+  background: transparent url(images/thermometer-filled-middle-2.png) repeat-y scroll top left;
   z-index: 40;
 }
 .thermometer-filled-bottom {
-  background: transparent url(images/thermometer-filled-ends.png) no-repeat 0 -53px;
+  background: transparent url(images/thermometer-filled-ends-2.png) no-repeat 0 -27px;
   z-index: 40;
 }
 
