@@ -7,5 +7,6 @@ package = Donor Rally
 core = 6.x
 php = 5.0
 
+project = donor_rally_features
 project status url = "http://code.opensourcery.com/fserver"
 

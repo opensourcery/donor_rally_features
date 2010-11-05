@@ -6,4 +6,5 @@ dependencies[] = donor_rally
 dependencies[] = simple_payments
 dependencies[] = simple_payments_paypal
 package = Donor Rally
+project = donor_rally_features
 project status url = "http://code.opensourcery.com/fserver"
