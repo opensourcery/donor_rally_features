@@ -3,7 +3,7 @@
 /**
  * Implementation of hook_user_default_permissions().
  */
-function donor_rally_team_inkind_user_default_permissions() {
+function dr_inkind_user_default_permissions() {
   $permissions = array();
 
   // Exported permission: edit field_food
