@@ -5,3 +5,4 @@ core = 6.x
 dependencies[] = donor_rally
 dependencies[] = salsa_api
 package = Donor Rally
+project status url = "http://code.opensourcery.com/fserver"

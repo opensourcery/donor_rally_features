@@ -1,16 +1,15 @@
 <?php
-
 // $Id$
-
 /**
  * @file
  * Inkind donations for Donor Rally.
  */
+include_once('dr_inkind.features.inc');
 
 /**
  * Implementation of hook_form_alter().
  */
-function donor_rally_inkind_form_donor_rally_settings_form_alter(&$form, $form_state) {
+function dr_inkind_form_donor_rally_settings_form_alter(&$form, $form_state) {
   $form['point_scales']['food'] = array(
     '#title' => t('Food scale'),
     '#description' => t('Scaling factor to turn pounds of food into points'),
@@ -30,7 +29,7 @@ function donor_rally_inkind_form_donor_rally_settings_form_alter(&$form, $form_s
 /**
  * Implementation of hook_donor_rally_team_stat_categories().
  */
-function donor_rally_inkind_donor_rally_team_stat_categories() {
+function dr_inkind_donor_rally_team_stat_categories() {
   return array(
     'food' => array(
       'label' => t('Food (lbs)'),
@@ -48,7 +47,7 @@ function donor_rally_inkind_donor_rally_team_stat_categories() {
 /**
  * Implementation of hook_donor_rally_point_scales().
  */
-function donor_rally_inkind_donor_rally_point_scales() {
+function dr_inkind_donor_rally_point_scales() {
   return array(
     'food' => variable_get('donor_rally_food_scale', 1.0),
     'volunteer' => variable_get('donor_rally_volunteer_scale', 1.0),

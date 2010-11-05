@@ -6,3 +6,6 @@ dependencies[] = content_profile
 package = Donor Rally
 core = 6.x
 php = 5.0
+
+project status url = "http://code.opensourcery.com/fserver"
+
