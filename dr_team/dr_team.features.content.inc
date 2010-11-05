@@ -272,7 +272,7 @@ function dr_team_content_default_fields() {
       'file_extensions' => 'png gif jpg jpeg',
       'file_path' => 'teams',
       'progress_indicator' => 'bar',
-      'max_filesize_per_file' => '512K',
+      'max_filesize_per_file' => '',
       'max_filesize_per_node' => '',
       'max_resolution' => '0',
       'min_resolution' => '0',
