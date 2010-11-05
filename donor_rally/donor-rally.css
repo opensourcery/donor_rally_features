@@ -1,6 +1,6 @@
 /** Thermometer **/
 #thermometer-overlay {
-z-index:1000; position: relative; background: url("/profiles/donor_rally_install/modules/donor_rally_features/donor_rally/images/thermometer-overlay.png") no-repeat scroll left top transparent; height: 256px;}
+z-index:1000; position: relative; background: url("images/thermometer-overlay.png") no-repeat scroll left top transparent; height: 256px;}
 
 .donor-rally-thermometer {
   position: relative;
