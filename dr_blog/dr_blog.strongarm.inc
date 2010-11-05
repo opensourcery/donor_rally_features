@@ -3,7 +3,7 @@
 /**
  * Implementation of hook_strongarm().
  */
-function donor_rally_team_blog_strongarm() {
+function dr_blog_strongarm() {
   $export = array();
   $strongarm = new stdClass;
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */

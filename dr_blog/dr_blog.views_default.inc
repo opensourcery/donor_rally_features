@@ -3,7 +3,7 @@
 /**
  * Implementation of hook_views_default_views().
  */
-function donor_rally_team_blog_views_default_views() {
+function dr_blog_views_default_views() {
   $views = array();
 
   // Exported view: team_blog

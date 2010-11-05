@@ -3,7 +3,7 @@
 /**
  * Implementation of hook_user_default_permissions().
  */
-function donor_rally_team_blog_user_default_permissions() {
+function dr_blog_user_default_permissions() {
   $permissions = array();
 
   // Exported permission: create team_blog_post content

@@ -3,7 +3,7 @@
 /**
  * Implementation of hook_ctools_plugin_api().
  */
-function donor_rally_team_blog_ctools_plugin_api() {
+function dr_blog_ctools_plugin_api() {
   list($module, $api) = func_get_args();
   if ($module == "strongarm" && $api == "strongarm") {
     return array("version" => 1);
@@ -13,7 +13,7 @@ function donor_rally_team_blog_ctools_plugin_api() {
 /**
  * Implementation of hook_node_info().
  */
-function donor_rally_team_blog_node_info() {
+function dr_blog_node_info() {
   $items = array(
     'admin_blog_post' => array(
       'name' => t('Admin Blog Post'),
@@ -44,7 +44,7 @@ function donor_rally_team_blog_node_info() {
 /**
  * Implementation of hook_views_api().
  */
-function donor_rally_team_blog_views_api() {
+function dr_blog_views_api() {
   return array(
     'api' => '2',
   );
