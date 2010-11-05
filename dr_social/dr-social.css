@@ -1,5 +1,5 @@
 /* $Id$ */
-ul.links li a.donor-rally-social-links {
+ul.links li a.dr-social-links {
   display: block;
   text-indent: -5000em;
   background: transparent url(images/social.png) no-repeat 0 0;
@@ -10,12 +10,12 @@ ul.links li a.donor-rally-social-links {
   float: left;
 }
 
-ul.links li a.donor-rally-social-links-facebook {
+ul.links li a.dr-social-links-facebook {
   background-position: 0 0;
 }
-ul.links li a.donor-rally-social-links-twitter {
+ul.links li a.dr-social-links-twitter {
   background-position: -48px 0;
 }
-ul.links li a.donor-rally-social-links-forward {
+ul.links li a.dr-social-links-forward {
   background-position: -96px 0;
 }

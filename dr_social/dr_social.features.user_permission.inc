@@ -3,7 +3,7 @@
 /**
  * Implementation of hook_user_default_permissions().
  */
-function donor_rally_social_user_default_permissions() {
+function dr_social_user_default_permissions() {
   $permissions = array();
 
   // Exported permission: access forward
