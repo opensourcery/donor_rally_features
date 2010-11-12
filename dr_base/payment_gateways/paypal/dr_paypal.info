@@ -2,9 +2,9 @@
 name = Donor Rally PayPal Gateway
 description = Use PayPal for donations
 core = 6.x
-dependencies[] = donor_rally
+dependencies[] = dr_base
 dependencies[] = simple_payments
 dependencies[] = simple_payments_paypal
 package = Donor Rally
-project = donor_rally_features
+project = dr_base_features
 project status url = "http://code.opensourcery.com/fserver"

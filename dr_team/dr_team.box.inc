@@ -24,7 +24,7 @@ function dr_team_default_box() {
   $box = new stdClass;
   $box->disabled = FALSE; /* Edit this to true to make a default box disabled initially */
   $box->api_version = 1;
-  $box->delta = 'donor_rally_welcome';
+  $box->delta = 'dr_base_welcome';
   $box->plugin_key = 'simple';
   $box->title = 'Welcome';
   $box->description = 'Donor Rally Welcome Box';
@@ -33,7 +33,7 @@ function dr_team_default_box() {
     'format' => 1,
   );
 
-  $export['donor_rally_welcome'] = $box;
+  $export['dr_base_welcome'] = $box;
   $box = new stdClass;
   $box->disabled = FALSE; /* Edit this to true to make a default box disabled initially */
   $box->api_version = 1;

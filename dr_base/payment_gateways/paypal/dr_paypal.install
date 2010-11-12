@@ -10,13 +10,13 @@
 /**
  * Implementation of hook_requirements().
  */
-function donor_rally_paypal_requirements($phase) {
+function dr_base_paypal_requirements($phase) {
   $requirements = array();
   $t = get_t();
 
   if ($phase == 'runtime') {
     if (!variable_get('simple_payments_paypal_account', FALSE)) {
-      $requirements['donor_rally_paypal'] = array(
+      $requirements['dr_base_paypal'] = array(
         'title' => $t('Donor Rally: PayPal account'),
         'value' => $t('Account not set'),
         'description' => $t('PayPal account needs to be <a href="!url">configured</a>.', array('!url' => url('admin/settings/simple-payments/paypal'))),

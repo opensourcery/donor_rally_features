@@ -16,19 +16,19 @@ define('DONOR_RALLY_CONTENT_PROFILE_TYPE', 'team');
 /**
  * Implements hook_menu().
  */
-function donor_rally_menu() {
+function dr_base_menu() {
   $items = array();
-  $items['admin/settings/donor-rally'] = array(
+  $items['admin/settings/dr-base'] = array(
     'title' => 'Donor Rally',
     'description' => 'Global settings for Donor Rally',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('donor_rally_settings_form'),
+    'page arguments' => array('dr_base_settings_form'),
     'access arguments' => array('administer donor rally'),
     'type' => MENU_NORMAL_ITEM,
-    'file' => 'donor_rally.admin.inc',
+    'file' => 'dr_base.admin.inc',
   );
 
-  $items['admin/settings/donor-rally/global'] = array(
+  $items['admin/settings/dr-base/global'] = array(
     'title' => 'Global settings',
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -10,
@@ -40,46 +40,46 @@ function donor_rally_menu() {
 /**
  * Implements hook_perm().
  */
-function donor_rally_perm() {
+function dr_base_perm() {
   return array('administer donor rally');
 }
 
 /**
  * Implements hook_theme().
  */
-function donor_rally_theme($existing, $type, $theme, $path) {
+function dr_base_theme($existing, $type, $theme, $path) {
   $base = array(
     'arguments' => array('vars' => array())
   );
   return array(
-    'donor_rally_team_progress_thermometer' => array(
-      'template' => 'donor-rally-team-progress-thermometer',
+    'dr_base_team_progress_thermometer' => array(
+      'template' => 'dr-base-team-progress-thermometer',
     ) + $base,
-    'donor_rally_team_progress_stats' => array(
-      'template' => 'donor-rally-team-progress-stats',
+    'dr_base_team_progress_stats' => array(
+      'template' => 'dr-base-team-progress-stats',
     ) + $base,
-    'donor_rally_team_leaderboard_button' => $base,
-    'donor_rally_team_page_button' => $base,
-    'donor_rally_new_blog_post_button' => $base,
-    'donor_rally_team_coordinator_login_button' => $base,
-    'donor_rally_team_coordinator_account_button' => $base,
+    'dr_base_team_leaderboard_button' => $base,
+    'dr_base_team_page_button' => $base,
+    'dr_base_new_blog_post_button' => $base,
+    'dr_base_team_coordinator_login_button' => $base,
+    'dr_base_team_coordinator_account_button' => $base,
   );
 }
 
 /**
  * Implements hook_profile_alter().
  */
-function donor_rally_profile_alter(&$account) {
+function dr_base_profile_alter(&$account) {
   if ($node = content_profile_load(DONOR_RALLY_CONTENT_PROFILE_TYPE, $account->uid)) {
-    $account->content['donor-rally-team-info'] = array(
+    $account->content['dr-base-team-info'] = array(
       '#type' => 'user_profile_category',
       '#title' => t('Team information'),
-      '#attributes' => array('class' => 'donor-rally-profile-team-info'),
+      '#attributes' => array('class' => 'dr-base-profile-team-info'),
     );
-    $account->content['donor-rally-team-info']['link'] = array(
+    $account->content['dr-base-team-info']['link'] = array(
       '#type' => 'user_profile_item',
       '#title' => t('Team Page link&mdash;give this to your team'),
-      '#value' => '<span class="donor-rally-raw-url">'.
+      '#value' => '<span class="dr-base-raw-url">'.
         url('node/'. $node->nid, array('absolute' => TRUE)) .
         '</span>',
     );
@@ -90,22 +90,22 @@ function donor_rally_profile_alter(&$account) {
 /**
  * Implements hook_cron().
  */
-function donor_rally_cron() {
-  donor_rally_refresh_all();
+function dr_base_cron() {
+  dr_base_refresh_all();
 }
 
 /**
  * Refreshes all teams' points and statistics by querying the payment
  * gateway and recalculating totals.
  */
-function donor_rally_refresh_all() {
-  $cash_scale = (float)variable_get('donor_rally_cash_scale', 1.0);
-  $food_scale = (float)variable_get('donor_rally_food_scale', 1.0);
-  $volunteer_scale = (float)variable_get('donor_rally_volunteer_scale', 1.0);
+function dr_base_refresh_all() {
+  $cash_scale = (float)variable_get('dr_base_cash_scale', 1.0);
+  $food_scale = (float)variable_get('dr_base_food_scale', 1.0);
+  $volunteer_scale = (float)variable_get('dr_base_volunteer_scale', 1.0);
 
-  $current_all = _donor_rally_fetch_current_team_stats();
+  $current_all = _dr_base_fetch_current_team_stats();
   foreach ($current_all as $nid => $now) {
-    if ($cash = module_invoke(variable_get('donor_rally_payment_gateway', 'donor_rally_salsa'), 'donor_rally_online_cash', $nid)) {
+    if ($cash = module_invoke(variable_get('dr_base_payment_gateway', 'dr_base_salsa'), 'dr_base_online_cash', $nid)) {
       $now['cash'] = $cash;
     }
     else {
@@ -117,7 +117,7 @@ function donor_rally_refresh_all() {
     // @TODO, abstract this out to exclude food and volunteer hours
     // unless the in-kind module/feature is enabled.
     db_query(
-      'UPDATE {' . _donor_rally_get_team_table() . '} SET ' .
+      'UPDATE {' . _dr_base_get_team_table() . '} SET ' .
         'field_cash_value = %f, ' .
         'field_total_points_value = (%f+%f)*%f + (%f+%f)*%f + (%f+%f)*%f, ' .
         'field_points_per_capita_value = ((%f+%f)*%f + (%f+%f)*%f + (%f+%f)*%f) / %d ' .
@@ -138,8 +138,8 @@ function donor_rally_refresh_all() {
  * Fetches current size, cash values, food values, volunteer values for all
  * teams (from the database).
  */
-function _donor_rally_fetch_current_team_stats() {
-  $result = db_query('SELECT * FROM {' . _donor_rally_get_team_table() . '}');
+function _dr_base_fetch_current_team_stats() {
+  $result = db_query('SELECT * FROM {' . _dr_base_get_team_table() . '}');
 
   $team_stats = array();
   while ($current = db_fetch_array($result)) {
@@ -159,7 +159,7 @@ function _donor_rally_fetch_current_team_stats() {
 /**
  * Get table where team information is stored.
  */
-function _donor_rally_get_team_table() {
+function _dr_base_get_team_table() {
   $field_cash = content_fields('field_cash');
   $database_info = content_database_info($field_cash);
   return $database_info['table'];
@@ -168,8 +168,8 @@ function _donor_rally_get_team_table() {
 /**
  * Set up Salsa Tracking_Code aliases for debugging.
  */
-function _donor_rally_set_debug_aliases() {
-  $team_stats = _donor_rally_query_cash_aggregate();
+function _dr_base_set_debug_aliases() {
+  $team_stats = _dr_base_query_cash_aggregate();
   $team_names = array_keys($team_stats);
 
   // Find all team node ids and assign nids to each entry in $team_names.
@@ -185,20 +185,20 @@ function _donor_rally_set_debug_aliases() {
     $i++;
   }
   drupal_set_message("Aliased $i out of " . count($team_names) . " teams...<br />" . dpr($team_aliases, true));
-  variable_set('donor_rally_debug_aliases', $team_aliases);
+  variable_set('dr_base_debug_aliases', $team_aliases);
 }
 
 /**
  * Formats a value (points or raw) for display.
  */
-function _donor_rally_format_value($value) {
+function _dr_base_format_value($value) {
   return number_format($value, 0, '.', ',');
 }
 
 /**
- * Implementation of hook_donor_rally_team_stat_categories().
+ * Implementation of hook_dr_base_team_stat_categories().
  */
-function donor_rally_donor_rally_team_stat_categories() {
+function dr_base_dr_base_team_stat_categories() {
   return array(
     'cash' => array(
       'label' => t('Cash ($)'),
@@ -209,20 +209,20 @@ function donor_rally_donor_rally_team_stat_categories() {
 }
 
 /**
- * Implementation of hook_donor_rally_point_scales().
+ * Implementation of hook_dr_base_point_scales().
  */
-function donor_rally_donor_rally_point_scales() {
+function dr_base_dr_base_point_scales() {
   return array(
-    'cash' => variable_get('donor_rally_cash_scale', 1.0),
+    'cash' => variable_get('dr_base_cash_scale', 1.0),
   );
 }
 
 /**
  * Calculate a team's statistics directly from node values.
  */
-function donor_rally_team_stats($node) {
-  $point_scales = module_invoke_all('donor_rally_point_scales');
-  $categories = module_invoke_all('donor_rally_team_stat_categories');
+function dr_base_team_stats($node) {
+  $point_scales = module_invoke_all('dr_base_point_scales');
+  $categories = module_invoke_all('dr_base_team_stat_categories');
 
   $stats['total_raw'] = 0.0;
   $stats['total_raw_goal'] = 0.0;
@@ -249,7 +249,7 @@ function donor_rally_team_stats($node) {
   // Provide a formatted version as well.
   foreach ($stats as $k => $v) {
     if (strpos($k, '_label') === FALSE) {
-      $stats[$k .'_view'] = _donor_rally_format_value($v);
+      $stats[$k .'_view'] = _dr_base_format_value($v);
     }
   }
 
@@ -260,15 +260,15 @@ function donor_rally_team_stats($node) {
 /**
  * Implements hook_init().
  */
-function donor_rally_init() {
+function dr_base_init() {
   /* We need our css occasionally on pages without our blocks on 'em...so just include it always */
-  drupal_add_css(drupal_get_path('module', 'donor_rally') .'/donor-rally.css', 'module');
+  drupal_add_css(drupal_get_path('module', 'dr_base') .'/dr-base.css', 'module');
 }
 
 /**
  * Implements hook_block().
  */
-function donor_rally_block($op = 'list', $delta = 0, $edit = array()) {
+function dr_base_block($op = 'list', $delta = 0, $edit = array()) {
   switch ($op) {
     case 'list':
      return array(
@@ -319,13 +319,13 @@ function donor_rally_block($op = 'list', $delta = 0, $edit = array()) {
       if ($delta === 'site_thermometer') {
         return array(
           'subject' => '',
-          'content' => _donor_rally_block_site_thermometer(),
+          'content' => _dr_base_block_site_thermometer(),
         );
       }
       elseif ($delta === 'team_links') {
         return array(
           'subject' => '',
-          'content' => _donor_rally_block_team_links(),
+          'content' => _dr_base_block_team_links(),
         );
       }
 
@@ -338,13 +338,13 @@ function donor_rally_block($op = 'list', $delta = 0, $edit = array()) {
 
       $vars = array();
       if ($node) {
-        $vars = donor_rally_team_stats($node);
+        $vars = dr_base_team_stats($node);
         $vars['node'] = $node;
       }
 
       if ($delta === 1 ) {
         // Allow payment gateway to set the button.
-        $button = module_invoke(variable_get('donor_rally_payment_gateway', 'donor_rally_salsa'), 'donor_rally_donate_button', $vars);
+        $button = module_invoke(variable_get('dr_base_payment_gateway', 'dr_base_salsa'), 'dr_base_donate_button', $vars);
         return array(
           'subject' => '',
           'content' => $button,
@@ -352,13 +352,13 @@ function donor_rally_block($op = 'list', $delta = 0, $edit = array()) {
       }
       
       $theme_functions = array(
-        0 => 'donor_rally_team_progress_thermometer',
-        2 => 'donor_rally_team_leaderboard_button',
-        3 => 'donor_rally_team_progress_stats',
-        4 => 'donor_rally_team_page_button',
-        5 => 'donor_rally_new_blog_post_button',
-        6 => 'donor_rally_team_coordinator_login_button',
-        7 => 'donor_rally_team_coordinator_account_button',
+        0 => 'dr_base_team_progress_thermometer',
+        2 => 'dr_base_team_leaderboard_button',
+        3 => 'dr_base_team_progress_stats',
+        4 => 'dr_base_team_page_button',
+        5 => 'dr_base_new_blog_post_button',
+        6 => 'dr_base_team_coordinator_login_button',
+        7 => 'dr_base_team_coordinator_account_button',
       );
       if (isset($theme_functions[$delta])) {
         return array('subject' => '', 'content' => theme($theme_functions[$delta], $vars));
@@ -370,17 +370,17 @@ function donor_rally_block($op = 'list', $delta = 0, $edit = array()) {
 /**
  * Implementation of hook_views_api().
  */
-function donor_rally_views_api() {
+function dr_base_views_api() {
   return array(
     'api' => 2,
-    'path' => drupal_get_path('module', 'donor_rally'),
+    'path' => drupal_get_path('module', 'dr_base'),
   );
 }
 
 /**
  * Preprocess thermometer vars for theming
  */
-function donor_rally_preprocess_donor_rally_team_progress_thermometer(&$variables) {
+function dr_base_preprocess_dr_base_team_progress_thermometer(&$variables) {
   $vars = $variables['vars'];
   unset($variables['vars']);
   if ($vars['total_raw_goal'] == 0.0) {
@@ -416,10 +416,10 @@ function donor_rally_preprocess_donor_rally_team_progress_thermometer(&$variable
 /**
  * Preprocess variables for statistics block theming
  */
-function donor_rally_preprocess_donor_rally_team_progress_stats(&$variables) {
+function dr_base_preprocess_dr_base_team_progress_stats(&$variables) {
   $variables += $variables['vars'];
   unset($variables['vars']);
-  $variables['categories'] = module_invoke_all('donor_rally_team_stat_categories');
+  $variables['categories'] = module_invoke_all('dr_base_team_stat_categories');
   if (count($variables['categories']) > 1) {
     $variables['categories']['total']['label'] = t('Total points');
   }
@@ -428,16 +428,16 @@ function donor_rally_preprocess_donor_rally_team_progress_stats(&$variables) {
 /**
  * Helper that constructs button markup.
  */
-function donor_rally_theme_button($class, $text, $link, $attr = array()) {
-  return l($text, $link, array('html' => TRUE, 'attributes' => array('class' => 'donor-rally-button '.$class) + $attr));
+function dr_base_theme_button($class, $text, $link, $attr = array()) {
+  return l($text, $link, array('html' => TRUE, 'attributes' => array('class' => 'dr-base-button '.$class) + $attr));
 }
 
 /**
  * Theme the "leaderboard" button block
  */
-function theme_donor_rally_team_leaderboard_button($vars) {
-  return donor_rally_theme_button(
-    'donor-rally-leaderboard-button',
+function theme_dr_base_team_leaderboard_button($vars) {
+  return dr_base_theme_button(
+    'dr-base-leaderboard-button',
     t('Team Ranking'),
     'leaderboard'
   );
@@ -446,9 +446,9 @@ function theme_donor_rally_team_leaderboard_button($vars) {
 /**
  * Theme the "team page" button block
  */
-function theme_donor_rally_team_page_button($vars) {
-  return donor_rally_theme_button(
-    'donor-rally-team-page-button',
+function theme_dr_base_team_page_button($vars) {
+  return dr_base_theme_button(
+    'dr-base-team-page-button',
     t('Team Page'),
     'node/'. $vars['node']->nid
   );
@@ -457,9 +457,9 @@ function theme_donor_rally_team_page_button($vars) {
 /**
  * Theme the "new blog post" button block
  */
-function theme_donor_rally_new_blog_post_button($vars) {
+function theme_dr_base_new_blog_post_button($vars) {
   if (user_access('create team_blog_post content')) {
-    return '<div class="donor-rally-new-blog-post-button">'.
+    return '<div class="dr-base-new-blog-post-button">'.
       l(t('Write a new blog post'), 'node/add/team-blog-post') .
       '</div>';
   }
@@ -469,14 +469,14 @@ function theme_donor_rally_new_blog_post_button($vars) {
 /**
  * Theme the "Team coordinator login" button block
  */
-function theme_donor_rally_team_coordinator_login_button($vars) {
+function theme_dr_base_team_coordinator_login_button($vars) {
   global $user;
   if ($user->uid != 0) {
     return;
   }
 
-  return donor_rally_theme_button(
-    'donor-rally-team-coordinator-login-button',
+  return dr_base_theme_button(
+    'dr-base-team-coordinator-login-button',
     t('Team Coordinator Login'),
     'user/login'
   );
@@ -485,14 +485,14 @@ function theme_donor_rally_team_coordinator_login_button($vars) {
 /**
  * Theme the "Team coordinator account/dashboard" button block
  */
-function theme_donor_rally_team_coordinator_account_button($vars) {
+function theme_dr_base_team_coordinator_account_button($vars) {
   global $user;
   if (!isset($vars['node']) || $vars['node']->uid != $user->uid) {
     return;
   }
 
-  return donor_rally_theme_button(
-    'donor-rally-team-coordinator-account-button',
+  return dr_base_theme_button(
+    'dr-base-team-coordinator-account-button',
     t('Team Dashboard'),
     'user'
   );
@@ -501,16 +501,16 @@ function theme_donor_rally_team_coordinator_account_button($vars) {
 /**
  * Sitewide total/goal thermometer.
  */
-function _donor_rally_block_site_thermometer() {
-  $goal = variable_get('donor_rally_goal', 314159265);
-  $total = _donor_rally_get_total_points();
+function _dr_base_block_site_thermometer() {
+  $goal = variable_get('dr_base_goal', 314159265);
+  $total = _dr_base_get_total_points();
   $vars['total_raw_goal'] = $goal;
   $vars['total_raw'] = $total;
-  $vars['total_raw_goal_view'] = _donor_rally_format_value($goal);
-  $vars['total_raw_view'] = _donor_rally_format_value($total);
+  $vars['total_raw_goal_view'] = _dr_base_format_value($goal);
+  $vars['total_raw_view'] = _dr_base_format_value($total);
 
-  $vars['edit_link'] = user_access('administer donor rally') ? l('Change campaign goal', 'admin/settings/donor-rally', array('query' => drupal_get_destination())) : '';
-  return theme('donor_rally_team_progress_thermometer', $vars);
+  $vars['edit_link'] = user_access('administer donor rally') ? l('Change campaign goal', 'admin/settings/dr-base', array('query' => drupal_get_destination())) : '';
+  return theme('dr_base_team_progress_thermometer', $vars);
 }
 
 /**
@@ -519,9 +519,9 @@ function _donor_rally_block_site_thermometer() {
  * @TODO This isn't actually used anymore, but it may be useful for
  * getting the total team goals at some point.
  */
-function _donor_rally_get_total_goal() {
+function _dr_base_get_total_goal() {
   $goal = 0;
-  $categories = module_invoke_all('donor_rally_team_stat_categories');
+  $categories = module_invoke_all('dr_base_team_stat_categories');
   foreach ($categories as $category => $info) {
     $field = content_fields($info['goal_field']);
     $db_info = content_database_info($field);
@@ -535,7 +535,7 @@ function _donor_rally_get_total_goal() {
 /**
  * Get total points for all combined teams.
  */
-function _donor_rally_get_total_points() {
+function _dr_base_get_total_points() {
   $field = content_fields('field_total_points');
   $db_info = content_database_info($field);
   $table = $db_info['table'];
@@ -546,7 +546,7 @@ function _donor_rally_get_total_points() {
 /**
  * User account/team management links.
  */
-function _donor_rally_block_team_links() {
+function _dr_base_block_team_links() {
   if (!user_is_anonymous()) {
     global $user;
     $links = array(
@@ -576,6 +576,6 @@ function _donor_rally_block_team_links() {
       ),
     );
   }
-  drupal_alter('donor_rally_team_links', $links);
+  drupal_alter('dr_base_team_links', $links);
   return theme('links', $links);
 }

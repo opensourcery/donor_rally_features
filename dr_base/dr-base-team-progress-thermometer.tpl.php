@@ -11,7 +11,7 @@
    *     Formatted number for current total.
    */
 ?>
-<div class="donor-rally-thermometer">
+<div class="dr-base-thermometer">
   <span class="thermometer-goal" style="top: <?php print $goal_top; ?>px;">Goal: <?php print $total_raw_goal_view; ?></span>
   <span class="thermometer-points" style="top: <?php print $points_top; ?>px;">Current: <?php print $total_raw_view; ?></span>
   <div id="thermometer-overlay"> </div>

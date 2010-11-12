@@ -1,0 +1,10 @@
+/* $Id$ */
+#dr-base-paypal-donate-form .form-text {
+  width: 3em;
+}
+#dr-base-paypal-donate-form label {
+  display: inline;
+}
+#dr-base-paypal-donate-form .form-item {
+  display: block;
+}

@@ -1,5 +1,5 @@
 core = "6.x"
-dependencies[] = "donor_rally"
+dependencies[] = "dr_base"
 dependencies[] = "features"
 dependencies[] = "location"
 dependencies[] = "strongarm"
@@ -24,5 +24,5 @@ features[views][] = "team_blog"
 features[views_api][] = "api:2"
 name = "Donor Rally Team Blog"
 package = "Features"
-project = donor_rally_features
+project = dr_base_features
 project status url = "http://code.opensourcery.com/fserver"

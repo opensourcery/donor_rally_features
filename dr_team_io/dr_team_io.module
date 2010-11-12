@@ -8,16 +8,6 @@
 include_once('dr_team_io.features.inc');
 
 /**
- * Implementation of hook_views_api().
- */
-function dr_team_io_views_api() {
-  return array(
-    'api' => 2,
-    'path' => drupal_get_path('module', 'dr_team_io'),
-  );
-}
-
-/**
  * Implementation of hook_menu().
  */
 function dr_team_io_menu() {

@@ -59,8 +59,8 @@ function dr_team_context_default_contexts() {
   $context->reactions = array(
     'block' => array(
       'blocks' => array(
-        'donor_rally-team_links' => array(
-          'module' => 'donor_rally',
+        'dr_base-team_links' => array(
+          'module' => 'dr_base',
           'delta' => 'team_links',
           'region' => 'header',
           'weight' => 0,
@@ -92,15 +92,15 @@ function dr_team_context_default_contexts() {
   $context->reactions = array(
     'block' => array(
       'blocks' => array(
-        'donor_rally-site_thermometer' => array(
-          'module' => 'donor_rally',
+        'dr_base-site_thermometer' => array(
+          'module' => 'dr_base',
           'delta' => 'site_thermometer',
           'region' => 'sidebar_second',
           'weight' => 0,
         ),
-        'boxes-donor_rally_welcome' => array(
+        'boxes-dr_base_welcome' => array(
           'module' => 'boxes',
-          'delta' => 'donor_rally_welcome',
+          'delta' => 'dr_base_welcome',
           'region' => 'content_top',
           'weight' => 0,
         ),
@@ -146,38 +146,38 @@ function dr_team_context_default_contexts() {
           'region' => 'sidebar_second',
           'weight' => 0,
         ),
-        'donor_rally-0' => array(
-          'module' => 'donor_rally',
+        'dr_base-0' => array(
+          'module' => 'dr_base',
           'delta' => 0,
           'region' => 'sidebar_second',
           'weight' => 1,
         ),
-        'donor_rally-1' => array(
-          'module' => 'donor_rally',
+        'dr_base-1' => array(
+          'module' => 'dr_base',
           'delta' => 1,
           'region' => 'sidebar_second',
           'weight' => 2,
         ),
-        'donor_rally-3' => array(
-          'module' => 'donor_rally',
+        'dr_base-3' => array(
+          'module' => 'dr_base',
           'delta' => 3,
           'region' => 'sidebar_second',
           'weight' => 3,
         ),
-        'donor_rally-2' => array(
-          'module' => 'donor_rally',
+        'dr_base-2' => array(
+          'module' => 'dr_base',
           'delta' => 2,
           'region' => 'sidebar_second',
           'weight' => 4,
         ),
-        'donor_rally-6' => array(
-          'module' => 'donor_rally',
+        'dr_base-6' => array(
+          'module' => 'dr_base',
           'delta' => 6,
           'region' => 'sidebar_second',
           'weight' => 5,
         ),
-        'donor_rally-7' => array(
-          'module' => 'donor_rally',
+        'dr_base-7' => array(
+          'module' => 'dr_base',
           'delta' => 7,
           'region' => 'sidebar_second',
           'weight' => 6,
@@ -200,8 +200,8 @@ function dr_team_context_default_contexts() {
           'region' => 'content_bottom',
           'weight' => 2,
         ),
-        'donor_rally-5' => array(
-          'module' => 'donor_rally',
+        'dr_base-5' => array(
+          'module' => 'dr_base',
           'delta' => 5,
           'region' => 'content_bottom',
           'weight' => 3,

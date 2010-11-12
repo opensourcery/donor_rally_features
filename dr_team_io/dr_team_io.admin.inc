@@ -56,7 +56,7 @@ function dr_team_io_import_form_submit($form, &$form_state) {
   $rows = _dr_team_io_import_data($data);
   drupal_set_message(t('Updated %count teams.', array('%count' => $rows)));
   global $user;
-  watchdog('donor_rally', '@user updated %count teams', array('@user' => $user->name, '%count' => $rows), WATCHDOG_NOTICE);
+  watchdog('dr_base', '@user updated %count teams', array('@user' => $user->name, '%count' => $rows), WATCHDOG_NOTICE);
 }
 
 /**
@@ -137,7 +137,7 @@ function _dr_team_io_import_data($data) {
 
   // Need to recalculate "total points" per node... might as well call
   // refresh_all() (which also happens to refresh from Salsa).
-  donor_rally_refresh_all(); 
+  dr_base_refresh_all(); 
   return $updates;
 }
 

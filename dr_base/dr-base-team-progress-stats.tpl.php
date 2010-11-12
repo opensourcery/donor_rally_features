@@ -2,7 +2,7 @@
 // $Id$
 $odd = FALSE;
 ?>
-<table class="donor-rally-team-stats">
+<table class="dr-base-team-stats">
   <thead>
     <tr class="even">
       <th>
