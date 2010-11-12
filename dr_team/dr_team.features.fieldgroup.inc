@@ -43,8 +43,6 @@ function dr_team_fieldgroup_default_groups() {
     'fields' => array(
       '0' => 'field_captain_first_name',
       '1' => 'field_captain_last_name',
-      '2' => 'field_captain_email',
-      '3' => 'field_captain_location',
     ),
   );
 
