@@ -9,4 +9,5 @@ php = 5.0
 
 project = dr_base_features
 project status url = "http://code.opensourcery.com/fserver"
+version = "6.x-1.0-alpha1"
 

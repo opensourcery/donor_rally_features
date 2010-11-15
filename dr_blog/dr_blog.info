@@ -26,3 +26,4 @@ name = "Donor Rally Team Blog"
 package = "Features"
 project = dr_base_features
 project status url = "http://code.opensourcery.com/fserver"
+version = "6.x-1.0-alpha1"
