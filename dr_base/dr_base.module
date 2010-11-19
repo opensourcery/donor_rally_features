@@ -196,9 +196,9 @@ function _dr_base_format_value($value) {
 }
 
 /**
- * Implementation of hook_dr_base_team_stat_categories().
+ * Implementation of hook_donor_rally_team_stat_categories().
  */
-function dr_base_dr_base_team_stat_categories() {
+function dr_base_donor_rally_team_stat_categories() {
   return array(
     'cash' => array(
       'label' => t('Cash ($)'),
@@ -209,9 +209,9 @@ function dr_base_dr_base_team_stat_categories() {
 }
 
 /**
- * Implementation of hook_dr_base_point_scales().
+ * Implementation of hook_donor_rally_point_scales().
  */
-function dr_base_dr_base_point_scales() {
+function dr_base_donor_rally_point_scales() {
   return array(
     'cash' => variable_get('dr_base_cash_scale', 1.0),
   );
@@ -221,8 +221,8 @@ function dr_base_dr_base_point_scales() {
  * Calculate a team's statistics directly from node values.
  */
 function dr_base_team_stats($node) {
-  $point_scales = module_invoke_all('dr_base_point_scales');
-  $categories = module_invoke_all('dr_base_team_stat_categories');
+  $point_scales = module_invoke_all('donor_rally_point_scales');
+  $categories = module_invoke_all('donor_rally_team_stat_categories');
 
   $stats['total_raw'] = 0.0;
   $stats['total_raw_goal'] = 0.0;
@@ -344,7 +344,7 @@ function dr_base_block($op = 'list', $delta = 0, $edit = array()) {
 
       if ($delta === 1 ) {
         // Allow payment gateway to set the button.
-        $button = module_invoke(variable_get('dr_base_payment_gateway', 'dr_base_salsa'), 'dr_base_donate_button', $vars);
+        $button = module_invoke(variable_get('dr_base_payment_gateway', 'dr_base_salsa'), 'donor_rally_donate_button', $vars);
         return array(
           'subject' => '',
           'content' => $button,
@@ -419,7 +419,7 @@ function dr_base_preprocess_dr_base_team_progress_thermometer(&$variables) {
 function dr_base_preprocess_dr_base_team_progress_stats(&$variables) {
   $variables += $variables['vars'];
   unset($variables['vars']);
-  $variables['categories'] = module_invoke_all('dr_base_team_stat_categories');
+  $variables['categories'] = module_invoke_all('donor_rally_team_stat_categories');
   if (count($variables['categories']) > 1) {
     $variables['categories']['total']['label'] = t('Total points');
   }
@@ -521,7 +521,7 @@ function _dr_base_block_site_thermometer() {
  */
 function _dr_base_get_total_goal() {
   $goal = 0;
-  $categories = module_invoke_all('dr_base_team_stat_categories');
+  $categories = module_invoke_all('donor_rally_team_stat_categories');
   foreach ($categories as $category => $info) {
     $field = content_fields($info['goal_field']);
     $db_info = content_database_info($field);
